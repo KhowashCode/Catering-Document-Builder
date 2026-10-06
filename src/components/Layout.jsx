@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { FileText, Receipt, ScrollText, CheckSquare, ChefHat, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { FileText, Receipt, ScrollText, CheckSquare, ChefHat, PanelLeftClose, PanelLeftOpen, Printer } from 'lucide-react';
 
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -41,6 +41,11 @@ export default function Layout() {
           <NavLink to="/kwitansi" className={({isActive}) => isActive ? "nav-item active" : "nav-item"} title="Kwitansi">
             <FileText size={20} />
             {!collapsed && <span>Kwitansi</span>}
+          </NavLink>
+
+          <NavLink to="/cetak-semua" className={({isActive}) => isActive ? "nav-item active" : "nav-item"} title="Cetak Semua">
+            <Printer size={20} />
+            {!collapsed && <span>Cetak Semua</span>}
           </NavLink>
         </nav>
       </aside>

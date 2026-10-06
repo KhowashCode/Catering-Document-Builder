@@ -4,6 +4,7 @@ import Invoice from './pages/Invoice';
 import Bast from './pages/Bast';
 import Pesanan from './pages/Pesanan';
 import Kwitansi from './pages/Kwitansi';
+import CetakSemua from './pages/CetakSemua';
 import './index.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="bast" element={<Bast />} />
           <Route path="pesanan" element={<Pesanan />} />
           <Route path="kwitansi" element={<Kwitansi />} />
+          <Route path="cetak-semua" element={<CetakSemua />} />
         </Route>
       </Routes>
     </BrowserRouter>

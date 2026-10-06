@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
-import capImg from '../assets/images/cap pawon yuknah.png';
-import ttdImg from '../assets/images/my TTD.png';
 
 // --- Terbilang Helper ---
+const formatIndonesianDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return dateString;
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const d = date.getDate().toString().padStart(2, '0');
+  return `${d} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
+
 const terbilang = (angka) => {
   const bilangan = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
   let hasil = "";
@@ -75,12 +82,11 @@ const styles = StyleSheet.create({
   signatureName: { fontSize: 10, fontWeight: 'bold' }
 });
 
-const InvoicePDF = ({ data }) => {
+export const InvoicePDF = ({ data }) => {
   const subTotal = data.items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
   const total = subTotal + Number(data.shippingFee);
 
   return (
-    <Document>
       <Page size="A4" style={styles.page}>
         {/* KOP SURAT */}
         <KopSurat />
@@ -110,8 +116,8 @@ const InvoicePDF = ({ data }) => {
           </View>
 
           <View style={styles.dateSection}>
-             <Text style={{ marginBottom: 4 }}>Tanggal: {data.date}</Text>
-             <Text style={{ fontWeight: 'bold' }}>Jatuh tempo: {data.dueDate}</Text>
+             <Text style={{ marginBottom: 4 }}>Tanggal: {formatIndonesianDate(data.date)}</Text>
+             <Text style={{ fontWeight: 'bold' }}>Jatuh tempo: {formatIndonesianDate(data.dueDate)}</Text>
           </View>
         </View>
 
@@ -216,21 +222,18 @@ const InvoicePDF = ({ data }) => {
         <View style={styles.signatureContainer}>
           <Text style={styles.signatureTitle}>HORMAT KAMI</Text>
           <View style={styles.signatureImageContainer}>
-            <Image src={capImg} style={styles.stampImage} />
-            <Image src={ttdImg} style={styles.signatureImage} />
           </View>
           <Text style={styles.signatureName}>{data.bankAccountName || 'MOHAMMAD BULGHOTUL KHOWASH'}</Text>
         </View>
       </Page>
-    </Document>
   );
 };
 
 export default function Invoice() {
   const [formData, setFormData] = useState({
     invoiceNo: '010.01/IX/2026',
-    date: '10/09/2026',
-    dueDate: '30/09/2026',
+    date: '2026-09-10',
+    dueDate: '2026-09-30',
     customerName: 'SDN PEKAYON I',
     customerAddress: 'Desa Pekayon Kec. Sukadiri, Kab. Tangerang',
     customerZip: '15530',
@@ -279,11 +282,11 @@ export default function Invoice() {
           <div className="grid grid-cols-2">
             <div className="form-group">
               <label className="form-label">Tanggal</label>
-              <input type="text" className="form-input" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+              <input type="date" className="form-input" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
             </div>
             <div className="form-group">
               <label className="form-label">Jatuh Tempo</label>
-              <input type="text" className="form-input" value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})} />
+              <input type="date" className="form-input" value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})} />
             </div>
           </div>
 
@@ -347,7 +350,9 @@ export default function Invoice() {
       {/* PDF Preview Section */}
       <div className="pdf-preview">
         <PDFViewer width="100%" height="100%">
-          <InvoicePDF data={formData} />
+          <Document>
+            <InvoicePDF data={formData} />
+          </Document>
         </PDFViewer>
       </div>
     </div>

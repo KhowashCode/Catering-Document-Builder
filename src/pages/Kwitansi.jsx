@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
-import capImg from '../assets/images/cap pawon yuknah.png';
-import ttdImg from '../assets/images/my TTD.png';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
+
+const formatIndonesianDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return dateString;
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const d = date.getDate().toString().padStart(2, '0');
+  return `${d} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
 
 // --- Terbilang Helper ---
 const terbilang = (angka) => {
@@ -84,11 +91,10 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF Document ---
-const KwitansiPDF = ({ data }) => {
+export const KwitansiPDF = ({ data }) => {
   const total = data.items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
 
   return (
-    <Document>
       <Page size="A4" style={styles.page}>
         <KopSurat />
 
@@ -189,7 +195,7 @@ const KwitansiPDF = ({ data }) => {
         <View style={styles.fieldRow}>
           <Text style={styles.fieldLabel}>Tanggal</Text>
           <Text style={styles.fieldSeparator}>:</Text>
-          <Text style={styles.fieldValue}>{data.tanggal}</Text>
+          <Text style={styles.fieldValue}>{formatIndonesianDate(data.tanggal)}</Text>
         </View>
 
         {/* STEMPEL LUNAS */}
@@ -212,15 +218,12 @@ const KwitansiPDF = ({ data }) => {
           <View style={styles.signatureBlock}>
             <Text style={styles.signatureTitle}>Yang Menyerahkan,</Text>
             <View style={styles.signatureImageContainer}>
-              <Image src={capImg} style={styles.stampImage} />
-              <Image src={ttdImg} style={styles.signatureImage} />
             </View>
             <Text style={styles.signatureName}>MOHAMMAD BULGHOTUL KHOWASH</Text>
             <Text style={{ fontSize: 9 }}>Pawon Yuk Nah Catering</Text>
           </View>
         </View>
       </Page>
-    </Document>
   );
 };
 
@@ -228,7 +231,7 @@ const KwitansiPDF = ({ data }) => {
 export default function Kwitansi() {
   const [formData, setFormData] = useState({
     kwitansiNo: '001/KW/X/2026',
-    tanggal: '06 Oktober 2026',
+    tanggal: '2026-10-06',
     terimaFrom: '',
     untukPembayaran: 'Pengadaan Makanan dan Minuman (Nasi Box)',
     showLunas: true,
@@ -271,7 +274,7 @@ export default function Kwitansi() {
             </div>
             <div className="form-group">
               <label className="form-label">Tanggal</label>
-              <input type="text" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+              <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
             </div>
           </div>
 
@@ -324,7 +327,9 @@ export default function Kwitansi() {
       {/* PDF Preview */}
       <div className="pdf-preview">
         <PDFViewer width="100%" height="100%">
-          <KwitansiPDF data={formData} />
+          <Document>
+            <KwitansiPDF data={formData} />
+          </Document>
         </PDFViewer>
       </div>
     </div>

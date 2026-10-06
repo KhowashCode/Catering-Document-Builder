@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
-import capImg from '../assets/images/cap pawon yuknah.png';
-import ttdImg from '../assets/images/my TTD.png';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
 
@@ -73,11 +71,10 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF Document ---
-const PesananPDF = ({ data }) => {
+export const PesananPDF = ({ data }) => {
   const total = data.items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
 
   return (
-    <Document>
       <Page size="A4" style={styles.page}>
         <KopSurat />
 
@@ -193,15 +190,12 @@ const PesananPDF = ({ data }) => {
           <View style={styles.signatureBlock}>
             <Text style={styles.signatureTitle}>Penerima Pesanan,</Text>
             <View style={styles.signatureImageContainer}>
-              <Image src={capImg} style={styles.stampImage} />
-              <Image src={ttdImg} style={styles.signatureImage} />
             </View>
             <Text style={styles.signatureName}>MOHAMMAD BULGHOTUL KHOWASH</Text>
             <Text style={{ fontSize: 9 }}>Pawon Yuk Nah Catering</Text>
           </View>
         </View>
       </Page>
-    </Document>
   );
 };
 
@@ -311,7 +305,9 @@ export default function Pesanan() {
       {/* PDF Preview */}
       <div className="pdf-preview">
         <PDFViewer width="100%" height="100%">
-          <PesananPDF data={formData} />
+          <Document>
+            <PesananPDF data={formData} />
+          </Document>
         </PDFViewer>
       </div>
     </div>

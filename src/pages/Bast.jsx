@@ -1,10 +1,25 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
-import capImg from '../assets/images/cap pawon yuknah.png';
-import ttdImg from '../assets/images/my TTD.png';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
+
+const formatIndonesianDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return dateString;
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const d = date.getDate().toString().padStart(2, '0');
+  return `${d} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
+
+const getIndonesianDay = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return '';
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  return days[date.getDay()];
+};
 
 // --- Styles for PDF ---
 const styles = StyleSheet.create({
@@ -49,11 +64,10 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF Document ---
-const BastPDF = ({ data }) => {
+export const BastPDF = ({ data }) => {
   const total = data.items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
 
   return (
-    <Document>
       <Page size="A4" style={styles.page}>
         <KopSurat />
 
@@ -65,7 +79,7 @@ const BastPDF = ({ data }) => {
 
         {/* PARAGRAF PEMBUKA */}
         <Text style={styles.paragraph}>
-          Pada hari ini, {data.hari} tanggal {data.tanggal} telah dilakukan serah terima pekerjaan pengadaan {data.jenisPekerjaan} antara:
+          Pada hari ini, {getIndonesianDay(data.tanggal)} tanggal {formatIndonesianDate(data.tanggal)} telah dilakukan serah terima pekerjaan pengadaan {data.jenisPekerjaan} antara:
         </Text>
 
         {/* PIHAK PERTAMA */}
@@ -182,15 +196,12 @@ const BastPDF = ({ data }) => {
             <Text style={styles.signatureTitle}>PIHAK KEDUA</Text>
             <Text style={styles.signatureTitle}>(Penyedia)</Text>
             <View style={styles.signatureImageContainer}>
-              <Image src={capImg} style={styles.stampImage} />
-              <Image src={ttdImg} style={styles.signatureImage} />
             </View>
             <Text style={styles.signatureName}>{data.pihak2Nama}</Text>
             <Text style={{ fontSize: 9 }}>{data.pihak2Jabatan}</Text>
           </View>
         </View>
       </Page>
-    </Document>
   );
 };
 
@@ -198,8 +209,7 @@ const BastPDF = ({ data }) => {
 export default function Bast() {
   const [formData, setFormData] = useState({
     bastNo: '001/BAST/X/2026',
-    hari: 'Selasa',
-    tanggal: '06 Oktober 2026',
+    tanggal: '2026-10-06',
     jenisPekerjaan: 'Makanan dan Minuman (Nasi Box)',
     pihak1Nama: '',
     pihak1Jabatan: 'Kepala Sekolah',
@@ -244,13 +254,9 @@ export default function Bast() {
             <input type="text" className="form-input" value={formData.bastNo} onChange={e => setFormData({...formData, bastNo: e.target.value})} />
           </div>
           <div className="grid grid-cols-2">
-            <div className="form-group">
-              <label className="form-label">Hari</label>
-              <input type="text" className="form-input" value={formData.hari} onChange={e => setFormData({...formData, hari: e.target.value})} />
-            </div>
-            <div className="form-group">
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
               <label className="form-label">Tanggal</label>
-              <input type="text" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+              <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
             </div>
           </div>
           <div className="form-group">
@@ -316,7 +322,9 @@ export default function Bast() {
       {/* PDF Preview */}
       <div className="pdf-preview">
         <PDFViewer width="100%" height="100%">
-          <BastPDF data={formData} />
+          <Document>
+            <BastPDF data={formData} />
+          </Document>
         </PDFViewer>
       </div>
     </div>
