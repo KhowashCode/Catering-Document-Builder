@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
@@ -256,6 +256,13 @@ export default function Kwitansi() {
     setFormData({ ...formData, items: newItems });
   };
 
+  const docFileName = `Kwitansi - ${formData.terimaFrom || 'Katering'}.pdf`;
+  const MyDocument = (
+    <Document title={`Kwitansi - ${formData.terimaFrom || 'Katering'}`}>
+      <KwitansiPDF data={formData} />
+    </Document>
+  );
+
   return (
     <div className="builder-layout">
       {/* Form Section */}
@@ -325,12 +332,22 @@ export default function Kwitansi() {
       </div>
 
       {/* PDF Preview */}
-      <div className="pdf-preview">
-        <PDFViewer width="100%" height="100%">
-          <Document>
-            <KwitansiPDF data={formData} />
-          </Document>
-        </PDFViewer>
+      <div style={{ position: 'sticky', top: '40px' }}>
+        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end', backgroundColor: 'var(--surface)', padding: '12px', borderRadius: '12px', boxShadow: 'var(--shadow-md)' }}>
+          <PDFDownloadLink 
+            document={MyDocument}
+            fileName={docFileName}
+            className="btn btn-primary"
+            style={{ width: '100%', textDecoration: 'none' }}
+          >
+            {({ loading }) => (loading ? 'Menyiapkan PDF...' : `📥 Unduh File PDF`)}
+          </PDFDownloadLink>
+        </div>
+        <div className="pdf-preview" style={{ height: 'calc(100vh - 150px)', top: 0 }}>
+          <PDFViewer width="100%" height="100%">
+            {MyDocument}
+          </PDFViewer>
+        </div>
       </div>
     </div>
   );

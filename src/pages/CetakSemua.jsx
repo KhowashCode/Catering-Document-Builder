@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PDFViewer, Document } from '@react-pdf/renderer';
+import { PDFViewer, Document, PDFDownloadLink } from '@react-pdf/renderer';
 import { PesananPDF } from './Pesanan';
 import { BastPDF } from './Bast';
 import { InvoicePDF } from './Invoice';
@@ -129,6 +129,16 @@ export default function CetakSemua() {
     items: formData.items
   };
 
+  const docFileName = `Berkas Katering - ${formData.instansiPelanggan || 'Katering'}.pdf`;
+  const MyDocument = (
+    <Document title={`Berkas Katering - ${formData.instansiPelanggan || 'Katering'}`}>
+      <PesananPDF data={dataPesanan} />
+      <BastPDF data={dataBast} />
+      <InvoicePDF data={dataInvoice} />
+      <KwitansiPDF data={dataKwitansi} />
+    </Document>
+  );
+
   return (
     <div className="builder-layout">
       {/* Form Section */}
@@ -169,7 +179,7 @@ export default function CetakSemua() {
               <label className="form-label">Jatuh Tempo Invoice</label>
               <input type="date" className="form-input" value={formData.invoiceDueDate} onChange={e => setFormData({...formData, invoiceDueDate: e.target.value})} />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
               <label className="form-label">Waktu Pengiriman</label>
               <input type="text" className="form-input" value={formData.waktuKirim} onChange={e => setFormData({...formData, waktuKirim: e.target.value})} />
             </div>
@@ -254,16 +264,23 @@ export default function CetakSemua() {
         </div>
       </div>
 
-      {/* PDF Preview */}
-      <div className="pdf-preview">
-        <PDFViewer width="100%" height="100%">
-          <Document>
-            <PesananPDF data={dataPesanan} />
-            <BastPDF data={dataBast} />
-            <InvoicePDF data={dataInvoice} />
-            <KwitansiPDF data={dataKwitansi} />
-          </Document>
-        </PDFViewer>
+      {/* PDF Preview Section */}
+      <div style={{ position: 'sticky', top: '40px' }}>
+        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end', backgroundColor: 'var(--surface)', padding: '12px', borderRadius: '12px', boxShadow: 'var(--shadow-md)' }}>
+          <PDFDownloadLink 
+            document={MyDocument}
+            fileName={docFileName}
+            className="btn btn-primary"
+            style={{ width: '100%', textDecoration: 'none' }}
+          >
+            {({ loading }) => (loading ? 'Menyiapkan PDF...' : `📥 Unduh ${docFileName}`)}
+          </PDFDownloadLink>
+        </div>
+        <div className="pdf-preview" style={{ height: 'calc(100vh - 150px)', top: 0 }}>
+          <PDFViewer width="100%" height="100%">
+            {MyDocument}
+          </PDFViewer>
+        </div>
       </div>
     </div>
   );
