@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
+import capImg from '../assets/images/cap pawon yuknah.png';
+import ttdImg from '../assets/images/my TTD.png';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
 
@@ -218,6 +220,8 @@ export const KwitansiPDF = ({ data }) => {
           <View style={styles.signatureBlock}>
             <Text style={styles.signatureTitle}>Yang Menyerahkan,</Text>
             <View style={styles.signatureImageContainer}>
+              {data.showTtd && <Image src={capImg} style={styles.stampImage} />}
+              {data.showTtd && <Image src={ttdImg} style={styles.signatureImage} />}
             </View>
             <Text style={styles.signatureName}>MOHAMMAD BULGHOTUL KHOWASH</Text>
             <Text style={{ fontSize: 9 }}>Pawon Yuk Nah Catering</Text>
@@ -235,6 +239,7 @@ export default function Kwitansi() {
     terimaFrom: '',
     untukPembayaran: 'Pengadaan Makanan dan Minuman (Nasi Box)',
     showLunas: true,
+    showTtd: false,
     items: [{ desc: 'Nasi Box', qty: 125, satuan: 'Box', price: 35000 }]
   });
 
@@ -305,6 +310,19 @@ export default function Kwitansi() {
             />
             <label htmlFor="showLunas" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
               Tampilkan Stempel "LUNAS"
+            </label>
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+            <input
+              type="checkbox"
+              id="showTtdKwitansi"
+              checked={formData.showTtd}
+              onChange={e => setFormData({...formData, showTtd: e.target.checked})}
+              style={{ width: '20px', height: '20px', accentColor: 'var(--primary)' }}
+            />
+            <label htmlFor="showTtdKwitansi" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
+              Tampilkan Tanda Tangan &amp; Cap
             </label>
           </div>
 

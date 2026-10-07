@@ -32,6 +32,7 @@ export default function CetakSemua() {
     
     // Waktu
     tanggal: '2026-10-06',
+    tanggalBast: '2026-10-06',
     invoiceDueDate: '2026-10-30',
     waktuKirim: 'Sesuai tanggal yang disepakati',
     
@@ -56,6 +57,11 @@ export default function CetakSemua() {
     pembayaran: 'Transfer setelah barang diterima',
     shippingFee: 0,
     showLunas: true,
+    // Tanda tangan & cap per-surat
+    showTtdPesanan: false,
+    showTtdBast: false,
+    showTtdInvoice: false,
+    showTtdKwitansi: false,
     
     // Items
     items: [{ desc: 'Nasi Box', qty: 125, satuan: 'Box', price: 35000 }]
@@ -89,13 +95,14 @@ export default function CetakSemua() {
     waktuKirim: formData.waktuKirim,
     tempatKirim: formData.instansiPelanggan,
     pembayaran: formData.pembayaran,
+    showTtd: formData.showTtdPesanan,
     items: formData.items
   };
 
   const dataBast = {
     bastNo: formData.bastNo,
-    hari: getIndonesianDay(formData.tanggal),
-    tanggal: formatIndonesianDate(formData.tanggal),
+    hari: getIndonesianDay(formData.tanggalBast),
+    tanggal: formatIndonesianDate(formData.tanggalBast),
     jenisPekerjaan: formData.jenisPekerjaan,
     pihak1Nama: formData.namaPelanggan,
     pihak1Jabatan: formData.jabatanPelanggan,
@@ -103,6 +110,7 @@ export default function CetakSemua() {
     pihak2Nama: formData.namaKatering,
     pihak2Jabatan: formData.jabatanKatering,
     pihak2Perusahaan: formData.perusahaanKatering,
+    showTtd: formData.showTtdBast,
     items: formData.items
   };
 
@@ -117,6 +125,7 @@ export default function CetakSemua() {
     bankAccountName: formData.bankAccountName,
     bankAccountNumber: formData.bankAccountNumber,
     shippingFee: formData.shippingFee,
+    showTtd: formData.showTtdInvoice,
     items: formData.items
   };
 
@@ -126,6 +135,7 @@ export default function CetakSemua() {
     terimaFrom: formData.instansiPelanggan,
     untukPembayaran: 'Pengadaan ' + formData.jenisPekerjaan,
     showLunas: formData.showLunas,
+    showTtd: formData.showTtdKwitansi,
     items: formData.items
   };
 
@@ -172,8 +182,12 @@ export default function CetakSemua() {
           <h3 style={{ marginBottom: '16px', marginTop: '24px', color: 'var(--primary)' }}>Waktu & Tanggal</h3>
           <div className="grid grid-cols-2" style={{ gap: '12px', marginBottom: '16px' }}>
             <div className="form-group">
-              <label className="form-label">Tanggal</label>
+              <label className="form-label">Tanggal (Invoice, Kwitansi, Pesanan)</label>
               <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Tanggal BAST</label>
+              <input type="date" className="form-input" value={formData.tanggalBast} onChange={e => setFormData({...formData, tanggalBast: e.target.value})} />
             </div>
             <div className="form-group">
               <label className="form-label">Jatuh Tempo Invoice</label>
@@ -260,6 +274,24 @@ export default function CetakSemua() {
             <label htmlFor="showLunas" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
               Tampilkan Stempel "LUNAS" di Kwitansi
             </label>
+          </div>
+
+          <h3 style={{ marginBottom: '12px', marginTop: '24px', color: 'var(--primary)' }}>Tanda Tangan &amp; Cap per Surat</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {[{id: 'showTtdPesanan', label: 'Surat Pesanan'}, {id: 'showTtdBast', label: 'BAST'}, {id: 'showTtdInvoice', label: 'Invoice'}, {id: 'showTtdKwitansi', label: 'Kwitansi'}].map(({id, label}) => (
+              <div key={id} className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: formData[id] ? 'rgba(79,70,229,0.05)' : 'var(--surface)' }}>
+                <input
+                  type="checkbox"
+                  id={id}
+                  checked={formData[id]}
+                  onChange={e => setFormData({...formData, [id]: e.target.checked})}
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--primary)', flexShrink: 0 }}
+                />
+                <label htmlFor={id} className="form-label" style={{ marginBottom: 0, cursor: 'pointer', fontSize: '13px' }}>
+                  ✍️ {label}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
       </div>

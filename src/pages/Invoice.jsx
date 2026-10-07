@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
+import capImg from '../assets/images/cap pawon yuknah.png';
+import ttdImg from '../assets/images/my TTD.png';
 
 // --- Terbilang Helper ---
 const formatIndonesianDate = (dateString) => {
@@ -222,6 +224,8 @@ export const InvoicePDF = ({ data }) => {
         <View style={styles.signatureContainer}>
           <Text style={styles.signatureTitle}>HORMAT KAMI</Text>
           <View style={styles.signatureImageContainer}>
+            {data.showTtd && <Image src={capImg} style={styles.stampImage} />}
+            {data.showTtd && <Image src={ttdImg} style={styles.signatureImage} />}
           </View>
           <Text style={styles.signatureName}>{data.bankAccountName || 'MOHAMMAD BULGHOTUL KHOWASH'}</Text>
         </View>
@@ -241,6 +245,7 @@ export default function Invoice() {
     bankAccountName: 'MOHAMMAD BULGHOTUL KHOWASH',
     bankAccountNumber: '0159752356100',
     shippingFee: 0,
+    showTtd: false,
     items: [{ desc: 'NASI BOX', price: 35000, qty: 125 }]
   });
 
@@ -350,6 +355,19 @@ export default function Invoice() {
           <div className="form-group">
             <label className="form-label">Biaya Pengiriman (Rp)</label>
             <input type="number" className="form-input" value={formData.shippingFee} onChange={e => setFormData({...formData, shippingFee: e.target.value})} />
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+            <input
+              type="checkbox"
+              id="showTtdInvoice"
+              checked={formData.showTtd}
+              onChange={e => setFormData({...formData, showTtd: e.target.checked})}
+              style={{ width: '20px', height: '20px', accentColor: 'var(--primary)' }}
+            />
+            <label htmlFor="showTtdInvoice" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
+              Tampilkan Tanda Tangan &amp; Cap
+            </label>
           </div>
         </div>
       </div>

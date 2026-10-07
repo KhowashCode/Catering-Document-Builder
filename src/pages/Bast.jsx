@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
+import capImg from '../assets/images/cap pawon yuknah.png';
+import ttdImg from '../assets/images/my TTD.png';
 
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
 
@@ -196,6 +198,8 @@ export const BastPDF = ({ data }) => {
             <Text style={styles.signatureTitle}>PIHAK KEDUA</Text>
             <Text style={styles.signatureTitle}>(Penyedia)</Text>
             <View style={styles.signatureImageContainer}>
+              {data.showTtd && <Image src={capImg} style={styles.stampImage} />}
+              {data.showTtd && <Image src={ttdImg} style={styles.signatureImage} />}
             </View>
             <Text style={styles.signatureName}>{data.pihak2Nama}</Text>
             <Text style={{ fontSize: 9 }}>{data.pihak2Jabatan}</Text>
@@ -217,6 +221,7 @@ export default function Bast() {
     pihak2Nama: 'MOHAMMAD BULGHOTUL KHOWASH',
     pihak2Jabatan: 'Direktur',
     pihak2Perusahaan: 'Pawon Yuk Nah Catering',
+    showTtd: false,
     items: [{ desc: 'Nasi Box', qty: 125, satuan: 'Box', price: 35000 }]
   });
 
@@ -323,6 +328,19 @@ export default function Bast() {
           <button className="btn btn-secondary" onClick={addItem} style={{ width: '100%', marginTop: '12px' }}>
             + Tambah Item
           </button>
+
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '16px' }}>
+            <input
+              type="checkbox"
+              id="showTtdBast"
+              checked={formData.showTtd}
+              onChange={e => setFormData({...formData, showTtd: e.target.checked})}
+              style={{ width: '20px', height: '20px', accentColor: 'var(--primary)' }}
+            />
+            <label htmlFor="showTtdBast" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
+              Tampilkan Tanda Tangan &amp; Cap
+            </label>
+          </div>
         </div>
       </div>
 
