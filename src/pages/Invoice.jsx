@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import NomorDokumenInput from '../components/NomorDokumenInput';
+import { buildNomorDokumen, KODE_DOKUMEN } from '../utils/nomorDokumen';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
 import capImg from '../assets/images/cap pawon yuknah.png';
@@ -6,7 +8,7 @@ import ttdImg from '../assets/images/my TTD.png';
 
 // --- Terbilang Helper ---
 const formatIndonesianDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return '................................';
   const date = new Date(dateString);
   if (isNaN(date)) return dateString;
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -235,7 +237,7 @@ export const InvoicePDF = ({ data }) => {
 
 export default function Invoice() {
   const [formData, setFormData] = useState({
-    invoiceNo: '010.01/IX/2026',
+    urutan: '01',
     date: '2026-09-10',
     dueDate: '2026-09-30',
     customerName: 'SDN PEKAYON I',
@@ -267,10 +269,11 @@ export default function Invoice() {
     setFormData({ ...formData, items: newItems });
   };
 
+  const invoiceNo = buildNomorDokumen(formData.date, formData.urutan, KODE_DOKUMEN.invoice);
   const docFileName = `Invoice - ${formData.customerName || 'Katering'}.pdf`;
   const MyDocument = (
     <Document title={`Invoice - ${formData.customerName || 'Katering'}`}>
-      <InvoicePDF data={formData} />
+      <InvoicePDF data={{ ...formData, invoiceNo }} />
     </Document>
   );
 
@@ -285,12 +288,11 @@ export default function Invoice() {
 
         <div className="glass-card">
           <h3 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Info Tagihan</h3>
-          <div className="grid grid-cols-2">
-            <div className="form-group">
-              <label className="form-label">No Invoice</label>
-              <input type="text" className="form-input" value={formData.invoiceNo} onChange={e => setFormData({...formData, invoiceNo: e.target.value})} />
-            </div>
-          </div>
+          <NomorDokumenInput
+            urutan={formData.urutan}
+            onChange={v => setFormData({...formData, urutan: v})}
+            previews={[{ label: 'No Invoice', value: invoiceNo }]}
+          />
           <div className="grid grid-cols-2">
             <div className="form-group">
               <label className="form-label">Tanggal</label>

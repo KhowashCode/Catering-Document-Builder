@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { FileText, Receipt, ScrollText, CheckSquare, ChefHat, PanelLeftClose, PanelLeftOpen, Printer } from 'lucide-react';
+import { FileText, Receipt, ScrollText, CheckSquare, ChefHat, PanelLeftClose, PanelLeftOpen, Printer, Layers } from 'lucide-react';
 
 export default function Layout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div className="app-container">
@@ -46,6 +46,11 @@ export default function Layout() {
           <NavLink to="/cetak-semua" className={({isActive}) => isActive ? "nav-item active" : "nav-item"} title="Cetak Semua">
             <Printer size={20} />
             {!collapsed && <span>Cetak Semua</span>}
+          </NavLink>
+
+          <NavLink to="/cetak-multi" className={({isActive}) => isActive ? "nav-item active" : "nav-item"} title="Cetak Multi-File">
+            <Layers size={20} />
+            {!collapsed && <span>Cetak Multi-File</span>}
           </NavLink>
         </nav>
       </aside>

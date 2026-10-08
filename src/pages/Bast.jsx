@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import NomorDokumenInput from '../components/NomorDokumenInput';
+import { buildNomorDokumen, KODE_DOKUMEN } from '../utils/nomorDokumen';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
 import capImg from '../assets/images/cap pawon yuknah.png';
@@ -7,7 +9,7 @@ import ttdImg from '../assets/images/my TTD.png';
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
 
 const formatIndonesianDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return '................................';
   const date = new Date(dateString);
   if (isNaN(date)) return dateString;
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -16,9 +18,9 @@ const formatIndonesianDate = (dateString) => {
 };
 
 const getIndonesianDay = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return '................';
   const date = new Date(dateString);
-  if (isNaN(date)) return '';
+  if (isNaN(date)) return '................';
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   return days[date.getDay()];
 };
@@ -212,7 +214,7 @@ export const BastPDF = ({ data }) => {
 // --- Main Component ---
 export default function Bast() {
   const [formData, setFormData] = useState({
-    bastNo: '001/BAST/X/2026',
+    urutan: '01',
     tanggal: '2026-10-06',
     jenisPekerjaan: 'Makanan dan Minuman (Nasi Box)',
     pihak1Nama: '',
@@ -243,10 +245,11 @@ export default function Bast() {
     setFormData({ ...formData, items: newItems });
   };
 
+  const bastNo = buildNomorDokumen(formData.tanggal, formData.urutan, KODE_DOKUMEN.bast);
   const docFileName = `BAST - ${formData.pihak1Instansi || 'Katering'}.pdf`;
   const MyDocument = (
     <Document title={`BAST - ${formData.pihak1Instansi || 'Katering'}`}>
-      <BastPDF data={formData} />
+      <BastPDF data={{ ...formData, bastNo }} />
     </Document>
   );
 
@@ -262,15 +265,14 @@ export default function Bast() {
         <div className="glass-card">
           <h3 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Info Dokumen</h3>
           <div className="form-group">
-            <label className="form-label">No BAST</label>
-            <input type="text" className="form-input" value={formData.bastNo} onChange={e => setFormData({...formData, bastNo: e.target.value})} />
+            <label className="form-label">Tanggal</label>
+            <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
           </div>
-          <div className="grid grid-cols-2">
-            <div className="form-group" style={{ gridColumn: 'span 2' }}>
-              <label className="form-label">Tanggal</label>
-              <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
-            </div>
-          </div>
+          <NomorDokumenInput
+            urutan={formData.urutan}
+            onChange={v => setFormData({...formData, urutan: v})}
+            previews={[{ label: 'No BAST', value: bastNo }]}
+          />
           <div className="form-group">
             <label className="form-label">Jenis Pekerjaan</label>
             <input type="text" className="form-input" value={formData.jenisPekerjaan} onChange={e => setFormData({...formData, jenisPekerjaan: e.target.value})} />

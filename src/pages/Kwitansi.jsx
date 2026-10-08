@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import NomorDokumenInput from '../components/NomorDokumenInput';
+import { buildNomorDokumen, KODE_DOKUMEN } from '../utils/nomorDokumen';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
 import capImg from '../assets/images/cap pawon yuknah.png';
@@ -7,7 +9,7 @@ import ttdImg from '../assets/images/my TTD.png';
 const formatRp = (num) => Number(num).toLocaleString('id-ID');
 
 const formatIndonesianDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return '................................';
   const date = new Date(dateString);
   if (isNaN(date)) return dateString;
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -234,7 +236,7 @@ export const KwitansiPDF = ({ data }) => {
 // --- Main Component ---
 export default function Kwitansi() {
   const [formData, setFormData] = useState({
-    kwitansiNo: '001/KW/X/2026',
+    urutan: '01',
     tanggal: '2026-10-06',
     terimaFrom: '',
     untukPembayaran: 'Pengadaan Makanan dan Minuman (Nasi Box)',
@@ -261,10 +263,11 @@ export default function Kwitansi() {
     setFormData({ ...formData, items: newItems });
   };
 
+  const kwitansiNo = buildNomorDokumen(formData.tanggal, formData.urutan, KODE_DOKUMEN.kwitansi);
   const docFileName = `Kwitansi - ${formData.terimaFrom || 'Katering'}.pdf`;
   const MyDocument = (
     <Document title={`Kwitansi - ${formData.terimaFrom || 'Katering'}`}>
-      <KwitansiPDF data={formData} />
+      <KwitansiPDF data={{ ...formData, kwitansiNo }} />
     </Document>
   );
 
@@ -279,16 +282,15 @@ export default function Kwitansi() {
 
         <div className="glass-card">
           <h3 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Info Dokumen</h3>
-          <div className="grid grid-cols-2">
-            <div className="form-group">
-              <label className="form-label">No Kwitansi</label>
-              <input type="text" className="form-input" value={formData.kwitansiNo} onChange={e => setFormData({...formData, kwitansiNo: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Tanggal</label>
-              <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
-            </div>
+          <div className="form-group">
+            <label className="form-label">Tanggal</label>
+            <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
           </div>
+          <NomorDokumenInput
+            urutan={formData.urutan}
+            onChange={v => setFormData({...formData, urutan: v})}
+            previews={[{ label: 'No Kwitansi', value: kwitansiNo }]}
+          />
 
           <h3 style={{ marginBottom: '16px', marginTop: '24px', color: 'var(--primary)' }}>Detail Kwitansi</h3>
           <div className="form-group">

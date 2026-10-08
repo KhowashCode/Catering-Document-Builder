@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import NomorDokumenInput from '../components/NomorDokumenInput';
+import { buildNomorDokumen, KODE_DOKUMEN } from '../utils/nomorDokumen';
 import { PDFViewer, Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import KopSurat from '../components/KopSurat';
 import capImg from '../assets/images/cap pawon yuknah.png';
@@ -206,7 +208,8 @@ export const PesananPDF = ({ data }) => {
 // --- Main Component ---
 export default function Pesanan() {
   const [formData, setFormData] = useState({
-    spNo: '001/SP/X/2026',
+    urutan: '01',
+    tanggal: '2026-10-06',
     namaPemesan: '',
     instansiPemesan: 'SDN PEKAYON I',
     alamatPemesan: 'Desa Pekayon Kec. Sukadiri, Kab. Tangerang',
@@ -236,10 +239,11 @@ export default function Pesanan() {
     setFormData({ ...formData, items: newItems });
   };
 
+  const spNo = buildNomorDokumen(formData.tanggal, formData.urutan, KODE_DOKUMEN.pesanan);
   const docFileName = `Surat Pesanan - ${formData.instansiPemesan || 'Katering'}.pdf`;
   const MyDocument = (
     <Document title={`Surat Pesanan - ${formData.instansiPemesan || 'Katering'}`}>
-      <PesananPDF data={formData} />
+      <PesananPDF data={{ ...formData, spNo }} />
     </Document>
   );
 
@@ -255,9 +259,15 @@ export default function Pesanan() {
         <div className="glass-card">
           <h3 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Info Dokumen</h3>
           <div className="form-group">
-            <label className="form-label">No Surat Pesanan</label>
-            <input type="text" className="form-input" value={formData.spNo} onChange={e => setFormData({...formData, spNo: e.target.value})} />
+            <label className="form-label">Tanggal (untuk nomor surat)</label>
+            <input type="date" className="form-input" value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
           </div>
+          <NomorDokumenInput
+            urutan={formData.urutan}
+            onChange={v => setFormData({...formData, urutan: v})}
+            tanggalLabel="Tanggal (untuk nomor surat)"
+            previews={[{ label: 'No Surat Pesanan', value: spNo }]}
+          />
 
           <h3 style={{ marginBottom: '16px', marginTop: '24px', color: 'var(--primary)' }}>Data Pemesan</h3>
           <div className="form-group">
